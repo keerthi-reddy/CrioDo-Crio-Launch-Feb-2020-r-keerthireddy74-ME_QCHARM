@@ -12,12 +12,14 @@ public class UpdateLines implements Edits {
   int numberOfLines;
   List<String> lines;
   Cursor cursor;
+  int length;
 
   public UpdateLines(int startingLineNo, int numberOfLines, List<String> lines, Cursor cursor) {
     this.startingLineNo = startingLineNo;
     this.numberOfLines = numberOfLines;
     this.lines = lines;
     this.cursor = cursor;
+    this.length = lines.size();
   }
 
   @Override
@@ -25,9 +27,12 @@ public class UpdateLines implements Edits {
     return this.startingLineNo;
   }
 
-  @Override
   public int getNumberOfLines() {
     return this.numberOfLines;
+  }
+  @Override
+  public int getLength() {
+    return this.length;
   }
 
   public List<String> getLines() {
@@ -55,54 +60,4 @@ public class UpdateLines implements Edits {
     this.cursor = cursor;
   }
 
-  public boolean equals(final Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof UpdateLines)) {
-      return false;
-    }
-    final UpdateLines other = (UpdateLines) o;
-    if (!other.canEqual((Object) this)) {
-      return false;
-    }
-    if (this.getStartingLineNo() != other.getStartingLineNo()) {
-      return false;
-    }
-    if (this.getNumberOfLines() != other.getNumberOfLines()) {
-      return false;
-    }
-    final Object this$lines = this.getLines();
-    final Object other$lines = other.getLines();
-    if (this$lines == null ? other$lines != null : !this$lines.equals(other$lines)) {
-      return false;
-    }
-    final Object this$cursor = this.getCursor();
-    final Object other$cursor = other.getCursor();
-    if (this$cursor == null ? other$cursor != null : !this$cursor.equals(other$cursor)) {
-      return false;
-    }
-    return true;
-  }
-
-  protected boolean canEqual(final Object other) {
-    return other instanceof UpdateLines;
-  }
-
-  public int hashCode() {
-    final int PRIME = 59;
-    int result = 1;
-    result = result * PRIME + this.getStartingLineNo();
-    result = result * PRIME + this.getNumberOfLines();
-    final Object $lines = this.getLines();
-    result = result * PRIME + ($lines == null ? 43 : $lines.hashCode());
-    final Object $cursor = this.getCursor();
-    result = result * PRIME + ($cursor == null ? 43 : $cursor.hashCode());
-    return result;
-  }
-
-  public String toString() {
-    return "UpdateLines(startingLineNo=" + this.getStartingLineNo() + ", numberOfLines=" + this.getNumberOfLines()
-        + ", lines=" + this.getLines() + ", cursor=" + this.getCursor() + ")";
-  }
 }
