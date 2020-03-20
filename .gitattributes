@@ -19,6 +19,7 @@ src/main/java/com/crio/qcharm/request/SearchRequest.java merge=copy-merge
 src/main/java/com/crio/qcharm/ide/QCharmApplication.java merge=copy-merge
 src/main/java/com/crio/qcharm/ide/QCharmController.java merge=copy-merge
 src/main/java/com/crio/qcharm/ide/config/RestConfig.java merge=copy-merge
+src/test/java/com/crio/qcharm/runner/JavaRunnerTest.java merge=copy-merge
 src/main/java/com/crio/qcharm/runner/CppRunner.java merge=copy-merge
 src/main/java/com/crio/qcharm/runner/BaseRunner.java merge=copy-merge
 src/main/java/com/crio/qcharm/runner/PythonRunner.java merge=copy-merge
