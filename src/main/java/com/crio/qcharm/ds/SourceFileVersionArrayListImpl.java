@@ -8,19 +8,10 @@ import java.util.stream.Collectors;
 
 public class SourceFileVersionArrayListImpl implements SourceFileVersion {
 
-
+  String fileName;
+  List<String> lines;
   public SourceFileVersionArrayListImpl(SourceFileVersionArrayListImpl obj) {
   }
-
-
-
-
-
-
-
-
-
-
 
   // TODO: CRIO_TASK_MODULE_LOAD_FILE
   // Input:
@@ -35,6 +26,8 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //     1. Use Java ArrayList to store the lines received from fileInfo
 
   public SourceFileVersionArrayListImpl(FileInfo fileInfo) {
+    fileName = fileInfo.fileName;
+    lines = fileInfo.lines;
   }
 
   // TODO: CRIO_TASK_MODULE_LOAD_FILE
@@ -60,7 +53,23 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   public Page getLinesBefore(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
     int numberOfLines = pageRequest.getNumberOfLines();
-
+    List<String> linesBefore = new ArrayList<String>();
+    if (lineNumber <= numberOfLines) {
+      for (int i = 0;i < lineNumber;i++) {
+        linesBefore.add(lines.get(i));
+      }
+    } else {
+      for (int i = numberOfLines;i < lineNumber;i++) {
+        linesBefore.add(lines.get(i));
+      }
+    }
+    if (lineNumber < numberOfLines) {
+      lineNumber = 0;
+    } else {
+      lineNumber = lineNumber - numberOfLines;
+    }
+    Page page=new Page(linesBefore, lineNumber, pageRequest.getFileName(), pageRequest.getCursorAt());
+    return page;
   }
 
   // TODO: CRIO_TASK_MODULE_LOAD_FILE
@@ -85,7 +94,21 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   public Page getLinesAfter(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
     int numberOfLines = pageRequest.getNumberOfLines();
-
+    List<String> linesAfter = new ArrayList<String>();
+    if (lines.size() - lineNumber < numberOfLines) {
+      for (int i = 1;i < lines.size() - lineNumber;i++) {
+        linesAfter.add(lines.get(i+lineNumber));
+      }
+    } else {
+      for (int i = 1;i <= numberOfLines;i++) {
+        linesAfter.add(lines.get(i+lineNumber));
+      }
+    }
+    if (lineNumber != lines.size()) {
+      lineNumber += 1;
+    }
+    Page page=new Page(linesAfter, lineNumber, pageRequest.getFileName(), pageRequest.getCursorAt());
+    return page;
   }
 
   // TODO: CRIO_TASK_MODULE_LOAD_FILE
@@ -110,6 +133,18 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   public Page getLinesFrom(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
     int numberOfLines = pageRequest.getNumberOfLines();
+    List<String> linesFrom = new ArrayList<String>();
+    if (lines.size() - lineNumber <= numberOfLines) {
+      for (int i = 0;i < lines.size() - lineNumber;i++) {
+        linesFrom.add(lines.get(i+lineNumber));
+      }
+    } else {
+      for (int i = 0;i < numberOfLines;i++) {
+        linesFrom.add(lines.get(i+lineNumber));
+      }
+    }
+    Page page=new Page(linesFrom, lineNumber, pageRequest.getFileName(), new Cursor(pageRequest.getStartingLineNo(), 0));
+    return page;
   }
 
 
@@ -119,5 +154,6 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
 
   @Override
   public List<String> getAllLines() {
+    return lines;
   }
 }
