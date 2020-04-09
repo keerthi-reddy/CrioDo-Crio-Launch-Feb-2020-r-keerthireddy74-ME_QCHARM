@@ -89,6 +89,8 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    Then lines returned is
   //    (line number 51, line number 52 ... , line number 74, line number75)
 
+
+
   @Override
   public Page getLinesAfter(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
@@ -128,6 +130,7 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    Then lines returned is
   //    (line number 50, line number 51 ... , line number 73, line number74)
 
+
   @Override
   public Page getLinesFrom(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
@@ -151,6 +154,12 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    SearchRequest - contains following information
   //         1. pattern - pattern you want to search
   //         2. File name - file where you want to search for the pattern
+
+  // TODO: CRIO_TASK_MODULE_IMPROVING_SEARCH
+  // Input:
+  //    SearchRequest - contains following information
+  //        1. pattern - pattern you want to search
+  //        2. File name - file where you want to search for the pattern
   // Description:
   //    1. Find all occurrences of the pattern in the SourceFile
   //    2. Create an empty list of cursors
@@ -160,24 +169,22 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    1. Use the simplest string search algorithm that you know.
   // Reference:
   //     https://www.geeksforgeeks.org/naive-algorithm-for-pattern-searching/
+  //    1. Use FASTER string search algorithm.
+  //    2. Feel free to try any other algorithm/data structure to improve search speed.
+  // Reference:
+  //     https://www.geeksforgeeks.org/kmp-algorithm-for-pattern-searching/
+
 
   @Override
   public List<Cursor> getCursors(SearchRequest searchRequest) {
-    boolean efficient = true;
     List<Cursor> cursorList = new ArrayList<Cursor>();
+    PatternSearchAlgorithm patternSearchAlgorithm = new PatternSearchAlgorithm();
     String pattern = searchRequest.getPattern();
     for (int i = 0;i < lines.size();i++) {
-      for(int j = 0;j <= lines.get(i).length()-pattern.length();j++) {
-        int k;
-        for (k = 0;k < pattern.length();k++) {
-          if (lines.get(i).charAt(j + k) != pattern.charAt(k)) {
-            break;
-          }
-        }
-        if (k == pattern.length()) {
-          cursorList.add(new Cursor(i,j));
-        }
-      }
+      ArrayList<Integer> columnList = patternSearchAlgorithm.KMPSearch(pattern, lines.get(i));
+      for (int j = 0;j < columnList.size();j++) {
+        cursorList.add(new Cursor(i,columnList.get(j)));
+      } 
     }
     return cursorList;
   }

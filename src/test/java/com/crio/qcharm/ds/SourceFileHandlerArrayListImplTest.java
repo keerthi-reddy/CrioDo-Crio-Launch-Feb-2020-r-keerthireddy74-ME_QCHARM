@@ -280,6 +280,24 @@ class SourceFileHandlerArrayListImplTest {
     assertEquals(10, page.getStartingLineNo());
   }
 
+  @Test
+  @Timeout(value=15000, unit = TimeUnit.MILLISECONDS)
+  void  efficientSearchTest() {
+    String fileName = "efficientSearchTest";
+    SourceFileHandlerArrayListImpl sourceFileHandlerArrayListImpl = getSourceFileHandlerArrayList(fileName);
+
+    sourceFileHandlerArrayListImpl.loadFile(inefficientSearch);
+    SearchRequest searchRequest = new SearchRequest(0, pattern, fileName);
+    long timeTakenInNs = 0;
+    for (int i = 0; i < 10; ++i) {
+      long startTime = System.nanoTime();
+      List<Cursor> cursors = sourceFileHandlerArrayListImpl.search(searchRequest);
+      timeTakenInNs += System.nanoTime() - startTime;
+      assertEquals(expectedCursorPositions, cursors);
+    }
+    System.out.printf("efficientSearchTest timetaken = %d ns\n", timeTakenInNs);
+    assert (timeTakenInNs < 3000000000l);
+  }
 
 
 
