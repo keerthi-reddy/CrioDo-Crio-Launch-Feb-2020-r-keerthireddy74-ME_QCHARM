@@ -48,7 +48,6 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    Then lines returned is
   //    (line number 25, line number 26 ... , line number 48, line number49)
 
-
   @Override
   public Page getLinesBefore(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
@@ -147,8 +146,41 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
     return page;
   }
 
+  // TODO: CRIO_TASK_MODULE_SEARCH
+  // Input:
+  //    SearchRequest - contains following information
+  //         1. pattern - pattern you want to search
+  //         2. File name - file where you want to search for the pattern
+  // Description:
+  //    1. Find all occurrences of the pattern in the SourceFile
+  //    2. Create an empty list of cursors
+  //    3. For each occurrence starting position add to the list of cursors
+  //    4. return the list of cursors
+  // Recommendation:
+  //    1. Use the simplest string search algorithm that you know.
+  // Reference:
+  //     https://www.geeksforgeeks.org/naive-algorithm-for-pattern-searching/
 
-
+  @Override
+  public List<Cursor> getCursors(SearchRequest searchRequest) {
+    boolean efficient = true;
+    List<Cursor> cursorList = new ArrayList<Cursor>();
+    String pattern = searchRequest.getPattern();
+    for (int i = 0;i < lines.size();i++) {
+      for(int j = 0;j <= lines.get(i).length()-pattern.length();j++) {
+        int k;
+        for (k = 0;k < pattern.length();k++) {
+          if (lines.get(i).charAt(j + k) != pattern.charAt(k)) {
+            break;
+          }
+        }
+        if (k == pattern.length()) {
+          cursorList.add(new Cursor(i,j));
+        }
+      }
+    }
+    return cursorList;
+  }
 
 
 

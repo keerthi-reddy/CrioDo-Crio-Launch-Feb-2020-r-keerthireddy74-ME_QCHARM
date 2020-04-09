@@ -172,6 +172,7 @@ class SourceFileHandlerArrayListImplTest {
     Cursor cursor = new Cursor(0, 0);
     PageRequest pageRequest = new PageRequest(startingLine, fileName, length, cursor);
     Page page = sourceFileHandlerArrayListImpl.getNextLines(pageRequest);
+
     assertEquals(fileInfo.getLines().subList(startingLine+1, 100), page.getLines());
     assertEquals(startingLine+1, page.getStartingLineNo());
     assertEquals(cursor, page.getCursorAt());
@@ -283,6 +284,27 @@ class SourceFileHandlerArrayListImplTest {
 
 
 
+  @Test
+  @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS)
+  void search() {
+    String fileName = "testfile";
+    SourceFileHandlerArrayListImpl sourceFileHandlerArrayListImpl = getSourceFileHandlerArrayList(fileName);
+
+    int N = 100;
+    FileInfo fileInfo = getLargeSampleFileInfo(fileName, N);
+    sourceFileHandlerArrayListImpl.loadFile(fileInfo);
+
+    SearchRequest searchRequest = new SearchRequest(0, "lineno", fileName);
+
+    List<Cursor> cursors = sourceFileHandlerArrayListImpl.search(searchRequest);
+    List<Cursor> expected = new ArrayList<>();
+
+    for (int i = 0; i < N; ++i) {
+      expected.add(new Cursor(i, 0));
+    }
+
+    assertEquals(expected, cursors);
+  }
 
 
 
