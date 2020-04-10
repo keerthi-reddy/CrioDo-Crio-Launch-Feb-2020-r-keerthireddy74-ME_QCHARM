@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SourceFileVersionArrayListImpl implements SourceFileVersion {
+public class SourceFileVersionArrayListImpl implements SourceFileVersion{
 
   String fileName;
   List<String> lines;
@@ -49,6 +49,90 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    (line number 25, line number 26 ... , line number 48, line number49)
 
   @Override
+  public SourceFileVersion apply(List<Edits> edits) {
+    List<String> lines = new ArrayList<>();
+    this.lines.addAll(lines);
+
+   // SourceFileVersionArrayListImpl latest = new SourceFileVersionArrayListImpl();
+    for (Edits oneEdit : edits) {
+      if (oneEdit instanceof UpdateLines) {
+        apply((UpdateLines) oneEdit);
+      } else {
+        assert(oneEdit instanceof SearchReplace);
+        apply((SearchReplace) oneEdit);
+      }
+    }
+    return this;
+  }
+
+
+  @Override
+  public void apply(SearchReplace searchReplace) {
+  }
+
+
+  // TODO: CRIO_TASK_MODULE_CUT_COPY_PASTE
+  // Input:
+  //     UpdateLines
+  //        1. startingLineNo - starting line number of last time it received page from backend
+  //        2. numberOfLines - number of lines received from backend last time.
+  //        3. lines - present view of lines in range(startingLineNo,startingLineNo+numberOfLines)
+  //        4. cursor
+  // Description:
+  //        1. Remove the line numbers in the range(starting line no, ending line no)
+  //        2. Inserting the lines in new content starting position starting line no
+  // Example:
+  //        UpdateLines looks like this
+  //            1. start line no - 50
+  //            2. numberOfLines - 10
+  //            3. lines - ["Hello world"]
+  //
+  //       Assume the file has 100 lines in it
+  //
+  //       File contents before edit:
+  //       ==========================
+  //       line no 0
+  //       line no 1
+  //       line no 2
+  //          .....
+  //       line no 99
+  //
+  //        File contents After Edit:
+  //        =========================
+  //        line no 0
+  //        line no 1
+  //        line no 2
+  //        line no 3
+  //         .....
+  //        line no 49
+  //        Hello World
+  //        line no 60
+  //        line no 61
+  //          ....
+  //        line no 99
+  //
+
+
+
+  @Override
+  public void apply(UpdateLines updateLines) {
+    List<String> content = updateLines.getLines();
+    int startingLineNo = updateLines.getStartingLineNo();
+    int numberOfLines = updateLines.getNumberOfLines();
+    List<String> dupLines = new ArrayList<String>();
+    for(int i = 0;i <= startingLineNo;i++) {
+      dupLines.add(lines.get(i));
+    }
+    for(int i = 0;i < content.size();i++) {
+      dupLines.add(content.get(i));
+    }
+    for(int i = startingLineNo+numberOfLines;i < lines.size();i++) {
+      dupLines.add(lines.get(i));
+    }
+    lines = dupLines;
+  }
+
+  @Override
   public Page getLinesBefore(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
     int numberOfLines = pageRequest.getNumberOfLines();
@@ -89,8 +173,6 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    Then lines returned is
   //    (line number 51, line number 52 ... , line number 74, line number75)
 
-
-
   @Override
   public Page getLinesAfter(PageRequest pageRequest) {
     int lineNumber = pageRequest.getStartingLineNo();
@@ -129,7 +211,6 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    numberOfLines - 25
   //    Then lines returned is
   //    (line number 50, line number 51 ... , line number 73, line number74)
-
 
   @Override
   public Page getLinesFrom(PageRequest pageRequest) {
@@ -173,8 +254,7 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
   //    2. Feel free to try any other algorithm/data structure to improve search speed.
   // Reference:
   //     https://www.geeksforgeeks.org/kmp-algorithm-for-pattern-searching/
-
-
+  
   @Override
   public List<Cursor> getCursors(SearchRequest searchRequest) {
     List<Cursor> cursorList = new ArrayList<Cursor>();
@@ -188,8 +268,6 @@ public class SourceFileVersionArrayListImpl implements SourceFileVersion {
     }
     return cursorList;
   }
-
-
 
   @Override
   public List<String> getAllLines() {
